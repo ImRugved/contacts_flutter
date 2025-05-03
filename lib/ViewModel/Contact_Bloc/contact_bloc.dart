@@ -1,5 +1,6 @@
 // lib/ViewModel/ContactBloc/contact_bloc.dart
 
+import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 
@@ -147,7 +148,7 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
                   ))
               .toList(),
           photoBytes: contact.photo != null
-              ? String.fromCharCodes(contact.photo!)
+              ? base64Encode(contact.photo!)
               : null,
         );
       }).toList();

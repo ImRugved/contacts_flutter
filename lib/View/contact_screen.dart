@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:contact_flutter/ViewModel/Contact_Bloc/contact_bloc.dart';
 import 'package:contact_flutter/ViewModel/Contact_Bloc/contact_event.dart';
@@ -27,7 +28,7 @@ class _ContactScreenState extends State<ContactScreen> {
     super.initState();
     // Request permission and load contacts when screen initializes
     context.read<ContactBloc>().add(RequestContactPermission());
-    
+
     // Add listener to update UI when text changes
     _searchController.addListener(() {
       setState(() {
@@ -105,10 +106,13 @@ class _ContactScreenState extends State<ContactScreen> {
                     onRefresh: () async {
                       // Create a completer to track when refresh is done
                       final completer = Completer<void>();
-                      
+
                       // Listen for state changes to know when refresh is complete
-                      final subscription = BlocProvider.of<ContactBloc>(context).stream.listen((newState) {
-                        if (newState is ContactLoaded && !newState.isRefreshing) {
+                      final subscription = BlocProvider.of<ContactBloc>(context)
+                          .stream
+                          .listen((newState) {
+                        if (newState is ContactLoaded &&
+                            !newState.isRefreshing) {
                           if (!completer.isCompleted) {
                             completer.complete();
                           }
@@ -118,13 +122,14 @@ class _ContactScreenState extends State<ContactScreen> {
                           }
                         }
                       });
-                      
+
                       // Trigger the refresh
                       context.read<ContactBloc>().add(RefreshContacts());
-                      
+
                       // Wait for refresh to complete or timeout after 5 seconds
                       try {
-                        await completer.future.timeout(const Duration(seconds: 5));
+                        await completer.future
+                            .timeout(const Duration(seconds: 5));
                       } catch (e) {
                         // Handle timeout or error
                       } finally {
@@ -195,6 +200,32 @@ class _ContactScreenState extends State<ContactScreen> {
     );
   }
 
+  // Safely get contact image with error handling
+  ImageProvider? _getContactImage(ContactModel contact) {
+    if (contact.photoBytes == null) return null;
+    
+    try {
+      return MemoryImage(base64Decode(contact.photoBytes!));
+    } catch (e) {
+      // If there's an error decoding the image, return null
+      return null;
+    }
+  }
+  
+  // Get contact initial for avatar fallback
+  Widget? _getContactInitial(ContactModel contact) {
+    // Only show initial if there's no photo or if photo loading failed
+    if (contact.photoBytes == null || _getContactImage(contact) == null) {
+      return Text(
+        contact.displayName.isNotEmpty
+            ? contact.displayName[0].toUpperCase()
+            : '?',
+        style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.bold),
+      );
+    }
+    return null;
+  }
+
   Widget _buildContactList(List<ContactModel> contacts) {
     if (contacts.isEmpty) {
       // Return a scrollable widget even when empty for RefreshIndicator to work
@@ -219,14 +250,10 @@ class _ContactScreenState extends State<ContactScreen> {
         final contact = contacts[index];
         return ListTile(
           leading: CircleAvatar(
-            backgroundImage: contact.photoBytes != null
-                ? MemoryImage(base64Decode(contact.photoBytes!))
-                : null,
-            child: contact.photoBytes == null
-                ? Text(contact.displayName.isNotEmpty
-                    ? contact.displayName[0].toUpperCase()
-                    : '?')
-                : null,
+            backgroundColor: Colors.blue.shade100,
+            // Safely handle photo display with error handling
+            backgroundImage: _getContactImage(contact),
+            child: _getContactInitial(contact),
           ),
           title: Text(contact.displayName),
           subtitle: contact.phones.isNotEmpty
