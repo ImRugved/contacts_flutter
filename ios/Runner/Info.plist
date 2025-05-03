@@ -45,5 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	
+	<!-- Permission descriptions -->
+	<key>NSContactsUsageDescription</key>
+	<string>This app requires contacts access to manage your contacts.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requires photo library access to import/export contacts and set contact photos.</string>
 </dict>
 </plist>

@@ -11,6 +11,12 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^9.1.1
   flutter_contacts: ^1.1.9+2
+  url_launcher: ^6.2.5
+  path_provider: ^2.1.1
+  intl: ^0.18.1
+  file_picker: ^6.1.12
+  share_plus: ^11.0.0
+  cross_file: ^0.3.4+2
 
 dev_dependencies:
   flutter_test:

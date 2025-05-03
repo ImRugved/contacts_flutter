@@ -14,15 +14,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Contact App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: BlocProvider(
-        create: (context) => ContactBloc(),
-        child: const ContactScreen(),
+    return BlocProvider(
+      create: (context) => ContactBloc(),
+      child: MaterialApp(
+        title: 'Contact App',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: const ContactScreen(),
       ),
     );
   }
